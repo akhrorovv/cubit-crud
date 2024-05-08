@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:ngdemo13/bloc/update_cubit.dart';
 import 'package:ngdemo13/models/post_model.dart';
 import 'package:ngdemo13/models/post_res_model.dart';
 import 'package:ngdemo13/services/http_service.dart';
 import 'package:ngdemo13/services/log_service.dart';
+
+import '../bloc/update_state.dart';
 
 class UpdatePage extends StatefulWidget {
   final Post post;
@@ -15,30 +18,21 @@ class UpdatePage extends StatefulWidget {
 }
 
 class _UpdatePageState extends State<UpdatePage> {
-
-
-  _updatePost() async {
-    String title = _titleController.text.toString().trim();
-    String body = _bodyController.text.toString().trim();
-
-    Post newPost = widget.post;
-    newPost.title = title;
-    newPost.body = body;
-
-    var response = await Network.PUT(
-        Network.API_POST_UPDATE + newPost.id.toString(),
-        Network.paramsUpdate(newPost));
-    LogService.d(response!);
-    PostRes postRes = Network.parsePostRes(response);
-    backToFinish();
-  }
+  late UpdateCubit updateCubit;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _titleController.text = widget.post.title!;
-    _bodyController.text = widget.post.body!;
+    updateCubit.titleController.text = widget.post.title!;
+    updateCubit.bodyController.text = widget.post.body!;
+
+    updateCubit.stream.listen((state) {
+      if (state is UpdatedPostState) {
+        LogService.d('UpdatedPostState is done');
+        backToFinish();
+      }
+    });
   }
 
   backToFinish() {
@@ -64,26 +58,27 @@ class _UpdatePageState extends State<UpdatePage> {
             children: [
               Container(
                 child: TextField(
-                  controller: _titleController,
+                  controller: updateCubit.titleController,
                   decoration: InputDecoration(hintText: "Title"),
                 ),
               ),
               Container(
                 child: TextField(
-                  controller: _bodyController,
+                  controller: updateCubit.bodyController,
                   decoration: InputDecoration(hintText: "Body"),
                 ),
               ),
               Container(
-                  margin: EdgeInsets.only(top: 10),
-                  width: double.infinity,
-                  child: MaterialButton(
-                    color: Colors.blue,
-                    onPressed: () {
-                      _updatePost();
-                    },
-                    child: Text("Update"),
-                  )),
+                margin: EdgeInsets.only(top: 10),
+                width: double.infinity,
+                child: MaterialButton(
+                  color: Colors.blue,
+                  onPressed: () {
+                    updateCubit.onUpdatePost(widget.post);
+                  },
+                  child: Text("Update"),
+                ),
+              ),
             ],
           ),
         ),
