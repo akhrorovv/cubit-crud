@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:ngdemo13/bloc/update_cubit.dart';
 import 'package:ngdemo13/models/post_model.dart';
@@ -24,6 +25,8 @@ class _UpdatePageState extends State<UpdatePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    updateCubit = BlocProvider.of(context);
+
     updateCubit.titleController.text = widget.post.title!;
     updateCubit.bodyController.text = widget.post.body!;
 
@@ -42,47 +45,46 @@ class _UpdatePageState extends State<UpdatePage> {
   @override
   Widget build(BuildContext context) {
     // keyvord ekran hohlagan joyini bossa yo'qolad
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          title: Text("Update Post"),
-        ),
-        body: Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Container(
-                child: TextField(
-                  controller: updateCubit.titleController,
-                  decoration: InputDecoration(hintText: "Title"),
-                ),
-              ),
-              Container(
-                child: TextField(
-                  controller: updateCubit.bodyController,
-                  decoration: InputDecoration(hintText: "Body"),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                width: double.infinity,
-                child: MaterialButton(
-                  color: Colors.blue,
-                  onPressed: () {
-                    updateCubit.onUpdatePost(widget.post);
-                  },
-                  child: Text("Update"),
-                ),
-              ),
-            ],
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Text("Update Post"),
       ),
+      body: BlocBuilder<UpdateCubit, UpdateState>(
+        builder: (BuildContext context, UpdateState state){
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Container(
+                  child: TextField(
+                    controller: updateCubit.titleController,
+                    decoration: InputDecoration(hintText: "Title"),
+                  ),
+                ),
+                Container(
+                  child: TextField(
+                    controller: updateCubit.bodyController,
+                    decoration: InputDecoration(hintText: "Body"),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  width: double.infinity,
+                  child: MaterialButton(
+                    color: Colors.blue,
+                    onPressed: () {
+                      updateCubit.onUpdatePost(widget.post);
+                    },
+                    child: Text("Update"),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      )
     );
   }
 }

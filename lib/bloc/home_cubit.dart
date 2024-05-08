@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ngdemo13/bloc/create_cubit.dart';
 import 'package:ngdemo13/bloc/home_state.dart';
+import 'package:ngdemo13/bloc/update_cubit.dart';
 
 import '../models/post_model.dart';
 import '../pages/create_page.dart';
@@ -16,8 +18,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> onLoadPostList() async {
     emit(HomeLoadingState());
 
-    var response =
-        await Network.GET(Network.API_POST_LIST, Network.paramsEmpty());
+    var response = await Network.GET(Network.API_POST_LIST, Network.paramsEmpty());
 
     if (response != null) {
       var result = Network.parsePostList(response);
@@ -44,10 +45,9 @@ class HomeCubit extends Cubit<HomeState> {
     bool result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return BlocBuilder<HomeCubit, HomeState>(
-            builder: (context, state) {
-              return CreatePage();
-            },
+          return BlocProvider(
+            create: (context) => CreateCubit(),
+            child: CreatePage(),
           );
         },
       ),
@@ -62,10 +62,9 @@ class HomeCubit extends Cubit<HomeState> {
     bool result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return BlocBuilder<HomeCubit, HomeState>(
-            builder: (context, state) {
-              return UpdatePage(post: post);
-            },
+          return BlocProvider(
+            create: (context) => UpdateCubit(),
+            child: UpdatePage(post: post),
           );
         },
       ),
