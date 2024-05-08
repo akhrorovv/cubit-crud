@@ -6,6 +6,7 @@ import 'package:ngdemo13/models/post_model.dart';
 import 'package:ngdemo13/models/post_res_model.dart';
 
 import '../bloc/create_state.dart';
+import '../bloc/home_state.dart';
 import '../services/http_service.dart';
 import '../services/log_service.dart';
 
@@ -29,7 +30,12 @@ class _CreatePageState extends State<CreatePage> {
     // TODO: implement initState
     super.initState();
     createCubit = BlocProvider.of<CreateCubit>(context);
-    createCubit.onCreatePostEvent();
+
+    createCubit.stream.listen((state) {
+      if (state is CreatedPostState) {
+        backToFinish();
+      }
+    });
   }
 
   @override
@@ -37,7 +43,7 @@ class _CreatePageState extends State<CreatePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text("Creat Post"),
+        title: Text("Create Post"),
       ),
       body: BlocBuilder<CreateCubit, CreateState>(
         builder: (BuildContext context, CreateState state){
@@ -68,7 +74,7 @@ class _CreatePageState extends State<CreatePage> {
                     child: MaterialButton(
                       color: Colors.blue,
                       onPressed: () {
-                        createCubit.onCreatePostEvent();
+                        createCubit.onCreatePost();
                       },
                       child: Text("Creat"),
                     )
