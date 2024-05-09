@@ -20,8 +20,7 @@ class CreatePage extends StatefulWidget {
 class _CreatePageState extends State<CreatePage> {
   late CreateCubit createCubit;
 
-
-  backToFinish(){
+  backToFinish() {
     Navigator.of(context).pop(true);
   }
 
@@ -31,11 +30,13 @@ class _CreatePageState extends State<CreatePage> {
     super.initState();
     createCubit = BlocProvider.of<CreateCubit>(context);
 
-    createCubit.stream.listen((state) {
-      if (state is CreatedPostState) {
-        backToFinish();
-      }
-    });
+    createCubit.stream.listen(
+      (state) {
+        if (state is CreatedPostState) {
+          backToFinish();
+        }
+      },
+    );
   }
 
   @override
@@ -43,41 +44,37 @@ class _CreatePageState extends State<CreatePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text("Create Post"),
+        title: const Text("Create Post"),
       ),
       body: BlocBuilder<CreateCubit, CreateState>(
-        builder: (BuildContext context, CreateState state){
+        builder: (BuildContext context, CreateState state) {
           return Container(
             width: double.infinity,
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 Container(
                   child: TextField(
                     controller: createCubit.titleController,
-                    decoration: InputDecoration(
-                        hintText: "Title"
-                    ),
+                    decoration: const InputDecoration(hintText: "Title"),
                   ),
                 ),
                 Container(
                   child: TextField(
                     controller: createCubit.bodyController,
-                    decoration: InputDecoration(
-                        hintText: "Body"
-                    ),
+                    decoration: const InputDecoration(hintText: "Body"),
                   ),
                 ),
                 Container(
-                    margin: EdgeInsets.only(top: 10),
-                    width: double.infinity,
-                    child: MaterialButton(
-                      color: Colors.blue,
-                      onPressed: () {
-                        createCubit.onCreatePost();
-                      },
-                      child: Text("Creat"),
-                    )
+                  margin: const EdgeInsets.only(top: 10),
+                  width: double.infinity,
+                  child: MaterialButton(
+                    color: Colors.blue,
+                    onPressed: () {
+                      createCubit.onCreatePost();
+                    },
+                    child: const Text("Creat"),
+                  ),
                 ),
               ],
             ),
